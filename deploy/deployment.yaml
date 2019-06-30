@@ -34,3 +34,33 @@ spec:
         image: ${CICD_IMAGE}:${CICD_EXECUTION_SEQUENCE}
         ports:
         - containerPort: 80
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: pipeline-${CICD_EXECUTION_SEQUENCE}
+spec:
+  rules:
+  - host: pipelines-${CICD_EXECUTION_SEQUENCE}.demo.test.com
+    http:
+      paths:
+      - backend:
+          serviceName: pipeline-${CICD_EXECUTION_SEQUENCE}
+          service port: 80
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+  app: pipeline
+  version: "${CICD_EXECITUION_SEQUENCE}"
+  name: pipeline-${CICD_EXECUTION_SEQUENCE}
+spec:
+  ports:
+  - name: http
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  type:ClusterIP
+  selector:
+    app: pipeline-${CICD_EXECUTION_SEQUENCE}
